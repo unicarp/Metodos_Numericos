@@ -1,0 +1,9 @@
+Algoritmo validez:
+
+1.-Obtener los absolutos actual y anterior
+2.-Obtener el valor mayor absoluto y su posicion
+3.-Intercambiar el valor absoluto mayor:
+	a)Segun la posicion, de 0 a n-1, encontrar el numero de columna
+	b)En la misma posicion, de 0 a n-1, mover la fila usada a la fila con el mismo numero que la columa
+4.-volver a checar la columna inicial
+5.-Repetir desde el paso 1 hasta que el valor absoluto esté en la posición de columna igual a la fila
