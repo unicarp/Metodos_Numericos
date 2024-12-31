@@ -28,12 +28,16 @@ double *guardarArray(int n){
 void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de filas
     printf("\n");                                   //m debe ser el numero de columnas
     for(int i = 0; i <n; i++){
-        for(int j = 0; j < m; j++){
-            if(j == m-1){
-                printf("%lf\n", *(array + (i*n)));
-            }else{
-                printf("%lf ", *(array + (i*n) + j));
+        if(m > 1){
+            for(int j = 0; j < m; j++){
+                if(j == m-1){
+                    printf("%lf\n", *(array + (i*n) + j));
+                }else{
+                    printf("%lf ", *(array + (i*n) + j));
+                }
             }
+        }else{
+            printf("%lf\n", *(array + i));
         }
     }
 }
@@ -97,9 +101,9 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
                 *(matriz+(m*n)+k) = *(matriz+(i*n)+k);
                 *(matriz+(i*n)+k) = *(temporal + k);        //intercambiamos las filas de la matriz
             }
-            *temporal = *(b+m);
+            *(temporal+i) = *(b+m);
             *(b+m) = *(b+i);
-            *(b+i) = *(temporal);                           //intercambiamos las filas del vector b
+            *(b+i) = *(temporal+i);                            //intercambiamos las filas del vector b
             printf("\nMatriz A:");
             imprimirMatriz(matriz, n,n);
             printf("\nVector B:");
@@ -127,20 +131,28 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
     temporal = NULL;
 }
 
-//Pivotea para garantizar la resolucion
-double *pivoteo(double *matriz,double *b, int n){
-    double *temporal = NULL;
+//Normalizacion de la matriz
+void normalizacion(double *matriz, double *b, int n){//n debe ser el numero de incognitas
+    double normal;   //Valor de la posicion ii
 
-    temporal = (double *)malloc(sizeof(double)*n);
-
-    if(temporal == NULL){
-        manejoError("No se pudo asignar memoria correctamente");
+    for(int i = 0; i < n; i++){
+        normal = *(matriz + (i*n) + i);
+        if(normal == 0){
+            manejoError("Se encontró un 0 en la diagonal dominante");
+        }
+        for(int j = 0; j < n; j++){
+            *(matriz + (i*n) + j) = (*(matriz + (i*n) + j))/normal;
+        }
+        *(b + i) = (*(b+i))/normal;
     }
 
-
-
-    return matriz;
+    printf("\nNormalizacion A:");
+    imprimirMatriz(matriz , n , n);
+    printf("\nNormalizacion B:");
+    imprimirMatriz(b , n , 1);
+    fflush(stdout);
 }
+
 
 //Proceso final de Gauss-Seidel
 double *gaussSeidel(int n, int iter,double error, double *matriz, double *x){
@@ -148,7 +160,7 @@ double *gaussSeidel(int n, int iter,double error, double *matriz, double *x){
     double errorActual = 0;
     double *resultado = NULL;
 
-    resultado = (double*)malloc(sizeof(double)*n);
+    resultado = (double*)malloc(sizeof(double)*(n*n));
     if(resultado == NULL){
         manejoError("No se pudo asignar memoria correctamente");
     }
@@ -158,7 +170,22 @@ double *gaussSeidel(int n, int iter,double error, double *matriz, double *x){
 
 
 int main(){
-    //placeholder
+    int n = 5; // Número de incógnitas
+
+    double matriz[] = {
+	    1, 1, 1, 1, 7,         
+        0, 5, 2, 1, 2,  
+        0, 0, 7, 2, 2,  
+	    2, 1, 1, 0, 0,  
+        1, 2, 3, 10, 2   
+    };
+    
+    double *b = guardarArray(5);
+
+    imprimirMatriz(b,n,1);
+
+    validez(matriz, b, n);
+    normalizacion(matriz, b, n);
 
     return 0;
 }
