@@ -25,18 +25,23 @@ double *guardarArray(int n){
 }
 
 //Imprime la matriz de valores
-void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de columnas
-    printf("\n");                                   //m debe ser el numero de filas
+void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de filas
+    printf("\n");                                   //m debe ser el numero de columnas
     for(int i = 0; i <n; i++){
-        if(i%(n/m) != (n/m)-1){
-            printf("%lff ", *(array + i));
-        }else{
-            printf("%lf\n", *(array + i));
+        for(int j = 0; j < m; j++){
+            if(j == m-1){
+                printf("%lf\n", *(array + (i*n)));
+            }else{
+                printf("%lf ", *(array + (i*n) + j));
+            }
         }
     }
 }
 
-//Valida si la matriz se puede resolver por este metodo
+/*
+Valida si la matriz se puede resolver por Gauss-Seidel
+Revisa si existe una diagonal dominante en la matriz
+*/
 void validez(double *matriz,double *b, int n){//n debe ser el numero de incognitas
     double *temporal = NULL;
 
@@ -56,7 +61,9 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
         manejoError("No se pudo asignar memoria correctamente");
     }
     
-    imprimirMatriz(matriz, n*n,n);
+    printf("\nMatriz A:");
+    imprimirMatriz(matriz, n,n);
+    printf("\nVector B:");
     imprimirMatriz(b, n, 1);
     fflush(stdout);
 
@@ -93,19 +100,27 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
             *temporal = *(b+m);
             *(b+m) = *(b+i);
             *(b+i) = *(temporal);                           //intercambiamos las filas del vector b
-            imprimirMatriz(matriz, n*n,n);
+            printf("\nMatriz A:");
+            imprimirMatriz(matriz, n,n);
+            printf("\nVector B:");
             imprimirMatriz(b, n, 1);
             fflush(stdout);
         }else{
             i++;
         }
     }
-    imprimirMatriz(matriz, n,n);
-    imprimirMatriz(b, n, 1);
-    fflush(stdout);
+
+    double suma;
 
     for(i = 0; i < n; i++){
-
+        suma = 0;
+        for(j = 0; j < n; j++){
+            if(j != i){
+                suma = suma + fabs(*(matriz+(i*n)+j));
+            }
+        }
+        if(*(matriz+(i*n)+i) < suma)
+            manejoError("La matriz no se puede resolver por Gauss-Seidel, no tiene diagonal dominante");
     }
 
     free(temporal);
