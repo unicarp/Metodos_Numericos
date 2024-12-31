@@ -8,7 +8,7 @@ void manejoError(const char *mensaje){
     exit(EXIT_FAILURE);//Indica el final del programa debido a un error
 }
 
-//Guarda la matriz de coeficientes
+//Guarda un arreglo de forma general
 double *guardarArray(int n){
     double *array = NULL;
 
@@ -18,7 +18,7 @@ double *guardarArray(int n){
     }
 
     for(int i = 0; i <n; i++){
-        scanf("%lf", array + i);
+        scanf("%lf", array + i);    //Los datos deben estar separados por algún tipo de espacio
     }
 
     return array;
@@ -37,7 +37,7 @@ void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de fi
                 }
             }
         }else{
-            printf("%lf\n", *(array + i));
+            printf("%lf\n", *(array + i));          //Para cuando solo se imprime un vectos
         }
     }
 }
@@ -155,7 +155,7 @@ void normalizacion(double *matriz, double *b, int n){//n debe ser el numero de i
 
 
 //Proceso final de Gauss-Seidel
-double *gaussSeidel(int n, int iter,double error, double *matriz, double *x){
+void gaussSeidel(int n, int iter,double error, double *matriz, double *x){
     int numIteracion = 1;
     double errorActual = 0;
     double *resultado = NULL;
@@ -165,7 +165,6 @@ double *gaussSeidel(int n, int iter,double error, double *matriz, double *x){
         manejoError("No se pudo asignar memoria correctamente");
     }
 
-    return resultado;
 }
 
 
