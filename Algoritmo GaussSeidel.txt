@@ -1,0 +1,7 @@
+Gauss-Seidel:
+
+1.-Obtener los valores del vector incial X
+2.-Restar los valores de incognitas restantes a la derecha en la fila de la matriz al correspondiente del vector B
+3.-Restar el valor de las incognitas anteriores en el valor correspondiente de B
+4.-Repetir desde el paso 1 hasta terminar de checar todas las filas
+5.-Repetir desde el paso 1 hasta llevar a uno de los criterios de paro

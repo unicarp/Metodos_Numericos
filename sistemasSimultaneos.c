@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-//Tomaremos los errores que puedan surgir
+//Toma los errores que puedan surgir
 void manejoError(const char *mensaje){
     fprintf(stderr,"Error: %s",mensaje);
     exit(EXIT_FAILURE);//Indica el final del programa debido a un error
@@ -24,9 +24,11 @@ double *guardarArray(int n){
     return array;
 }
 
-//Imprime la matriz de valores
-void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de filas
-    printf("\n");                                   //m debe ser el numero de columnas
+/*Imprime la matriz de valores
+n debe ser el numero de filas
+m debe ser el numero de columnas*/
+void imprimirMatriz(double *array, int n, int m){
+    printf("\n");
     for(int i = 0; i <n; i++){
         if(m > 1){
             for(int j = 0; j < m; j++){
@@ -37,7 +39,7 @@ void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de fi
                 }
             }
         }else{
-            printf("%lf\n", *(array + i));          //Para cuando solo se imprime un vectos
+            printf("%lf\n", *(array + i));   //cuando solo se imprime un vectos
         }
     }
 }
@@ -45,8 +47,10 @@ void imprimirMatriz(double *array, int n, int m){   //n debe ser el numero de fi
 /*
 Valida si la matriz se puede resolver por Gauss-Seidel
 Revisa si existe una diagonal dominante en la matriz
+b debe ser el vector de resultados
+n debe ser el número de incognitas
 */
-void validez(double *matriz,double *b, int n){//n debe ser el numero de incognitas
+void validez(double *matriz,double *b, int n){
     double *temporal = NULL;
 
     int m;          //numero para comprobar la posicion del absoluto mayor en la iteración atual
@@ -66,26 +70,28 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
     }
     
     printf("\nMatriz A:");
-    imprimirMatriz(matriz, n,n);
+    imprimirMatriz(matriz, n, n);
+
     printf("\nVector B:");
-    imprimirMatriz(b, n, 1);
+    imprimirMatriz(b, n, 1);        //imprime la matriz y el vector de resultados
+
     fflush(stdout);
 
-    while(i < n){//seguirá intentando acomodar las filas hasta que pueda verlas todas o hasta que encuentre uno con el absoluto mayor en la misma posición
+    while(i < n){//seguira intentando acomodar las filas hasta que pueda verlas todas o hasta que encuentre uno con el absoluto mayor en la misma posición
         c = 0;
         r = 0;
         for(j = 0; j < n; j++){
-            if(j == 0){
+            if(j == 0){     //guarda siempre el absoluto de la primera posicion
                 absact = fabs(*(matriz + (i*n)));
-                absmay = absact;
-                r = 0;
-                m = 0;
+                absmay = absact;    //guarda el primer absoluto como el mayor hasta el momento
+                r = 0;      //guarda la primera posicion actual como 0
+                m = 0;      //guarda la posicion del absoluto mayor como 0
             }else{
-                absant = absact;
-                absact = fabs(*(matriz + (i*n) + j));
-                r++;                    
-                if(absmay < absact){
-                    m = r;
+                absant = absact;    //respalda el absoluto actual
+                absact = fabs(*(matriz + (i*n) + j));   //actualiza el nuevo absoluto actual
+                r++;
+                if(absmay < absact){ //remplaza el absoluto mayor si encuentra uno mas grande
+                    m = r;      //guarda la posicion del nuevo absoluto mayor
                     absmay = absact;
                 }
             }
@@ -99,15 +105,18 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
             for(int k = 0; k <n; k++){
                 *(temporal + k) = *(matriz+(m*n)+k);
                 *(matriz+(m*n)+k) = *(matriz+(i*n)+k);
-                *(matriz+(i*n)+k) = *(temporal + k);        //intercambiamos las filas de la matriz
+                *(matriz+(i*n)+k) = *(temporal + k);    //intercambia las filas de la matriz
             }
             *(temporal+i) = *(b+m);
             *(b+m) = *(b+i);
-            *(b+i) = *(temporal+i);                            //intercambiamos las filas del vector b
+            *(b+i) = *(temporal+i);      //intercambia las filas del vector b
+
             printf("\nMatriz A:");
             imprimirMatriz(matriz, n,n);
+
             printf("\nVector B:");
             imprimirMatriz(b, n, 1);
+
             fflush(stdout);
         }else{
             i++;
@@ -120,11 +129,12 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
         suma = 0;
         for(j = 0; j < n; j++){
             if(j != i){
-                suma = suma + fabs(*(matriz+(i*n)+j));
+                suma = suma + fabs(*(matriz+(i*n)+j));      //suma los valores absolutos de la fila excepto el de la diagonal
             }
         }
-        if(*(matriz+(i*n)+i) < suma)
+        if(*(matriz+(i*n)+i) < suma){      //revisa que que el valor en la diagonal sea mayor a la suma de los absolutos de las filas
             manejoError("La matriz no se puede resolver por Gauss-Seidel, no tiene diagonal dominante");
+        }
     }
 
     free(temporal);
@@ -132,38 +142,84 @@ void validez(double *matriz,double *b, int n){//n debe ser el numero de incognit
 }
 
 //Normalizacion de la matriz
-void normalizacion(double *matriz, double *b, int n){//n debe ser el numero de incognitas
+//n debe ser el numero de incognitas
+//b debe ser el vector de resultados
+void normalizacion(double *matriz, double *b, int n){
     double normal;   //Valor de la posicion ii
 
     for(int i = 0; i < n; i++){
         normal = *(matriz + (i*n) + i);
         if(normal != 1){
             if(normal == 0){
-                manejoError("Se encontró un 0 en la diagonal dominante");
+                manejoError("Se encontró un 0 en la diagonal dominante");   //un 0 en la diagonal indetermina los resultados
             }
             for(int j = 0; j < n; j++){
-                *(matriz + (i*n) + j) = (*(matriz + (i*n) + j))/normal;
+                *(matriz + (i*n) + j) = (*(matriz + (i*n) + j))/normal;     //divide todos los valores de una fila de A por el valor correspondiente en la diagonal
             }
-            *(b + i) = (*(b+i))/normal;
+            *(b + i) = (*(b+i))/normal;     //divide los valores de B por la norma correspondiente
         }
     }
 
     printf("\nNormalizacion A:");
     imprimirMatriz(matriz , n , n);
+
     printf("\nNormalizacion B:");
     imprimirMatriz(b , n , 1);
+
     fflush(stdout);
 }
 
 
 //Proceso final de Gauss-Seidel
-void gaussSeidel(int n, int iter,double error, double *matriz, double *x){
-    int numIteracion = 1;
-    double errorActual = 0;
+//n debe ser el numero de incognitas
+void gaussSeidel(int n, int iter,double error, double *matriz, double *x, double *b){
+    int numIteracion = 1;       //numero de iteracion actual
+    int i, j;                   //los iteradores se inician aquí para que sea más fácil usarse más adelante
+    double *errores = NULL;     //todos los errores actuales entre las incognitas nuevas y las anteriores
+    double *xAnt = NULL;        //el vector x anterior
+    double errorActual = 0;     //el error actual más grande
+
+    errores = (double *)malloc(sizeof(double)*n);
+
+    if(errores == NULL){
+        manejoError("No se pudo asignar memoria correctamente");
+    }
+
+    xAnt = (double *)malloc(sizeof(double)*n);
+    
+    if(xAnt == NULL){
+        manejoError("No se pudo asignar memoria correctamente");
+    }
 
     do{
+        for(i = 0; i < n; i++){
+            *(xAnt + i) = *(x + i);     //guarda un respaldo de X en un conjunto de las X anteriores
+            *(x + i) = *(b + i);        //cambia el valor actual de X por el del vector de resultados B
+            for(j = 0; j < n; j++){
+                if (j != i){        //evita restar la X sobre la que estamos trabajando
+                    *(x + i) = (*(x + i)) - (*(matriz + (i*n) + j))*(*(x + j)); //resta los valores anteriores de X y los que quedan en tiempo real por el coeficiente
+                }
+            }
+            *(errores + i) = fabs((*(xAnt + i)) - (*(x + i)));       //calcula el error
+            if(i == 0){
+                errorActual = *errores;
+            }else if(*(errores + i) > errorActual){
+                errorActual = *(errores + i);       //se asegura de obtener siempre el error más grande
+            }
+        }
+
+        numIteracion++;     //aumenta el numero de iteracion a la siguiente
 
     }while(errorActual > error && iter >= numIteracion);
+
+    free(errores);
+    free(xAnt);
+
+    printf("\nVector X: ");
+    imprimirMatriz(x, n, 1);
+
+    printf("\nNúmero final de iteraciones:.....%d", numIteracion-1);
+    printf("\nError máximo final:..............%lf", errorActual);
 
 }
 
