@@ -3,7 +3,6 @@
 #include <math.h>
 
 //inicializacion de funciones (estetica)
-void alojarMemoria(double *, int );
 void manejoError(const char *);
 double *guardarArray(int);
 void imprimirMatriz(double *,int, int);
@@ -15,6 +14,9 @@ void gaussSeidel(double *, double *, double *, int, int, double);
 int main(){
     int n, iter;
     double error;
+    double *matriz = NULL;
+    double *b = NULL;
+    double *x = NULL;
 
     printf("Ingrese en el orden:\n"
             "Numero de icognitas\n"
@@ -24,13 +26,14 @@ int main(){
             "Numero maximo de iteraciones\n"
             "Error maximo permitido\n");
 
-    scanf("%d", n);
+    scanf("%d", &n);
     
-    double *matriz = guardarArray(n*n);
-    double *b = guardarArray(n);
-    double *x = guardarArray(n);
+    matriz = guardarArray(n*n);
+    b = guardarArray(n);
+    x = guardarArray(n);
 
-    scanf("%d %lf", &iter, &error);
+    scanf("%d", &iter);
+    scanf("%lf", &error);
     //se terminana de pedir los datos
 
     //Primero se checa que se pueda resolver el sistema por este método
@@ -42,6 +45,13 @@ int main(){
     //Finalmente se hace el metodo numerico
     gaussSeidel(matriz, x, b, n, iter, error);
 
+    free(matriz);
+    matriz = NULL;
+    free(b);
+    b = NULL;
+    free(x);
+    x = NULL;
+
     return 0;
 }
 
@@ -52,22 +62,16 @@ void manejoError(const char *mensaje){
     exit(EXIT_FAILURE);//Indica el final del programa debido a un error
 }
 
-//Reserva la nueva memoria a usar para el arreglo
-//array apuntador del que se va a crear el arreglo
-//n es el numero total de elements en el arreglo
-void alojarMemoria(double *array,int n){
-    array = (double *)malloc(sizeof(double)*n);
-    if(array == NULL){
-        manejoError("No se pudo asignar memoria correctamente.");
-    }
-}
-
 //Guarda un arreglo de forma general
 //n es el numero total de elementos en el arreglo
 double *guardarArray(int n){
     double *array = NULL;
 
-    alojarMemoria(array, n);
+    array = (double *)malloc(sizeof(double)*n);
+
+    if(array == NULL){
+        manejoError("No se pudo asignar memoria correctamente");
+    }
 
     for(int i = 0; i <n; i++){
         scanf("%lf", array + i);    //Los datos deben estar separados por algún tipo de espacio
@@ -115,7 +119,11 @@ void validez(double *matriz,double *b, int n){
     double absant;  //valor absoluto del valor anterior
     double absmay;  //valor absoluto mayor
 
-    alojarMemoria(temporal, n);
+    temporal = (double *)malloc(sizeof(double)*n);
+
+    if(temporal == NULL){
+        manejoError("No se pudo asignar memoria correctamente");
+    }
     
     printf("\nMatriz A:");
     imprimirMatriz(matriz, n, n);
@@ -229,9 +237,17 @@ void gaussSeidel(double *matriz, double *x, double *b, int n, int iter,double er
     double *xAnt = NULL;        //el vector x anterior
     double errorActual = 0;     //el error actual más grande
 
-    alojarMemoria(errores,n);
+    errores = (double*)malloc(sizeof(double)*n);
 
-    alojarMemoria(xAnt,n);
+    if(errores == NULL){
+        manejoError("No se pudo asignar memoria correctamente");
+    }
+
+    xAnt = (double *)malloc(sizeof(double)*n);
+
+    if(xAnt == NULL){
+        manejoError("No se pudo alojar memoria correctamente");
+    }
 
     do{
         for(i = 0; i < n; i++){
@@ -255,7 +271,9 @@ void gaussSeidel(double *matriz, double *x, double *b, int n, int iter,double er
     }while(errorActual > error && iter >= numIteracion);
 
     free(errores);
+    errores = NULL;
     free(xAnt);
+    xAnt = NULL;
 
     printf("\nVector X: ");
     imprimirMatriz(x, n, 1);
