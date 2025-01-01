@@ -137,13 +137,15 @@ void normalizacion(double *matriz, double *b, int n){//n debe ser el numero de i
 
     for(int i = 0; i < n; i++){
         normal = *(matriz + (i*n) + i);
-        if(normal == 0){
-            manejoError("Se encontró un 0 en la diagonal dominante");
+        if(normal != 1){
+            if(normal == 0){
+                manejoError("Se encontró un 0 en la diagonal dominante");
+            }
+            for(int j = 0; j < n; j++){
+                *(matriz + (i*n) + j) = (*(matriz + (i*n) + j))/normal;
+            }
+            *(b + i) = (*(b+i))/normal;
         }
-        for(int j = 0; j < n; j++){
-            *(matriz + (i*n) + j) = (*(matriz + (i*n) + j))/normal;
-        }
-        *(b + i) = (*(b+i))/normal;
     }
 
     printf("\nNormalizacion A:");
@@ -158,33 +160,17 @@ void normalizacion(double *matriz, double *b, int n){//n debe ser el numero de i
 void gaussSeidel(int n, int iter,double error, double *matriz, double *x){
     int numIteracion = 1;
     double errorActual = 0;
-    double *resultado = NULL;
 
-    resultado = (double*)malloc(sizeof(double)*(n*n));
-    if(resultado == NULL){
-        manejoError("No se pudo asignar memoria correctamente");
-    }
+    do{
+
+    }while(errorActual > error && iter >= numIteracion);
 
 }
 
 
 int main(){
-    int n = 5; // Número de incógnitas
-
-    double matriz[] = {
-	    1, 1, 1, 1, 7,         
-        0, 5, 2, 1, 2,  
-        0, 0, 7, 2, 2,  
-	    2, 1, 1, 0, 0,  
-        1, 2, 3, 10, 2   
-    };
     
-    double *b = guardarArray(5);
-
-    imprimirMatriz(b,n,1);
-
-    validez(matriz, b, n);
-    normalizacion(matriz, b, n);
+    //placeholder
 
     return 0;
 }
