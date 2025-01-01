@@ -30,7 +30,7 @@ int main(){
     double *b = guardarArray(n);
     double *x = guardarArray(n);
 
-    scanf("%d %lf",iter, error);
+    scanf("%d %lf", &iter, &error);
     //se terminana de pedir los datos
 
     //Primero se checa que se pueda resolver el sistema por este método
